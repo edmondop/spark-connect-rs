@@ -132,7 +132,12 @@ impl ChannelBuilder {
     }
 
     async fn create_client(&self) -> Result<SparkSession, Error> {
-        let endpoint = format!("https://{}:{}", self.host, self.port);
+        let mut endpoint = format!("http://{}:{}", self.host, self.port);
+
+        if (self.use_ssl) {
+            endpoint = format!("https://{}:{}", self.host, self.port);
+        }
+
         let channel = Endpoint::from_shared(endpoint)?.connect().await?;
 
         let service_client = SparkConnectServiceClient::with_interceptor(
